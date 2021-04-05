@@ -2,28 +2,33 @@ set nocompatible
 set backspace=indent,eol,start
 set autoread
 set hidden
+filetype plugin on
 set wildmenu
 set undodir=~/.vim/undodir
 set undofile
-filetype plugin indent on
-" Old changes
+"HTML autoindent
+set tabstop=8     " tabs are at proper location
+set expandtab     " don't use actual tab character (ctrl-v)
+set shiftwidth=2  " indenting is 4 spaces
+set autoindent    " turns it on
+set smartindent   " does the right thing (mostly) in programs
 set number
 set mouse=a
 set numberwidth=1
 set clipboard=unnamedplus
-syntax enable
+"syntax enable
 set noshowcmd
 set showmatch
 set encoding=UTF-8
 set noshowmode
 set sw=2
 set laststatus=2
-set ft=javascript
+"set ft=javascript
 set confirm
 
 " turn hybrid line numbers on
-: set number relativenumber
-: set nu rnu
+set number relativenumber
+set nu rnu
 
 "VimIcons
 "set guifont=Fira\ Code\ iScript\ Regular\ 11
@@ -47,7 +52,7 @@ Plug 'airblade/vim-rooter' "Mover el proyecto al root
 Plug 'easymotion/vim-easymotion' "Moverse dentro del archivo
 Plug 'scrooloose/nerdtree'
 Plug 'ryanoasis/vim-devicons'
-Plug 'vwxyutarooo/nerdtree-devicons-syntax'
+"Plug 'vwxyutarooo/nerdtree-devicons-syntax'
 Plug 'ryanoasis/vim-webdevicons'
 Plug 'prettier/vim-prettier', {'do': 'npm install'}
 Plug 'airblade/vim-gitgutter'
@@ -70,11 +75,15 @@ Plug 'kkvh/vim-docker-tools' " Docker Tools
 Plug 'tpope/vim-commentary' " VimCommentary
 Plug 'skanehira/preview-markdown.vim' " Markdown preview
 Plug 'ap/vim-css-color' "CSS Colors
+Plug 'drewtempelmeyer/palenight.vim'
+Plug 'Yggdroot/indentLine' " IndentLine
+Plug 'junegunn/vim-peekaboo' "Clipboard tool
+Plug 'roxma/vim-window-resize-easy' 
 call plug#end()
 
 "Color Scheme
 set background=dark
-colorscheme nord
+colorscheme happy_hacking
 
 "Insert Brackets
 inoremap { {}<ESC>ha
@@ -82,6 +91,7 @@ inoremap [ []<ESC>ha
 inoremap ( ()<ESC>ha
 inoremap " ""<ESC>ha
 inoremap ' ''<ESC>ha
+inoremap ` ``<ESC>ha
 
 "Terminal normal mode
 if has('nvim')
@@ -95,8 +105,8 @@ if has('nvim')
   nnoremap <A-j> <c-w>j
   nnoremap <A-k> <c-w>k
   nnoremap <A-l> <c-w>l
-  tnoremap <Tab> <C-\><C-n>:bn<CR>
-  tnoremap <S-Tab> <C-\><C-n>:bp<CR>
+"  tnoremap <Tab> <C-\><C-n>:bn<CR>
+"  tnoremap <S-Tab> <C-\><C-n>:bp<CR>
 endif
 
 "Ignore teminal buffer
@@ -108,5 +118,38 @@ augroup END
 "Block NerdTree window
 autocmd BufEnter * if bufname('#') =~# "^NERD_tree_" | b# | endif
 
+"Clear search
+nnoremap <A-/> :noh<CR>
+
+"Using jk or kj to scape
+inoremap jk <Esc>
+inoremap kj <Esc>
+
+"Split teminal on right side
+:set splitright
+" send paragraph under curso to terminal
+function! Exec_on_term(cmd)
+  if a:cmd=="normal"
+    exec "normal mk\"vyip"
+  else
+    exec "normal gv\"vy"
+  endif
+  if !exists("g:last_terminal_chan_id")
+    vs
+    terminal
+    let g:last_terminal_chan_id = b:terminal_job_id
+    wincmd p
+  endif
+
+  if getreg('"v') =~ "^\n"
+    call chansend(g:last_terminal_chan_id, expand("%:p")."\n")
+  else
+    call chansend(g:last_terminal_chan_id, @v)
+  endif
+  exec "normal `k"
+endfunction
+
+nnoremap <F6> :call Exec_on_term("normal")<CR>
+vnoremap <F6> :<c-u>call Exec_on_term("visual")<CR>
 
 "More confing on ~/.config/nvim/plug-config
