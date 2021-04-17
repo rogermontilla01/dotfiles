@@ -79,6 +79,7 @@ Plug 'drewtempelmeyer/palenight.vim'
 Plug 'Yggdroot/indentLine' " IndentLine
 Plug 'junegunn/vim-peekaboo' "Clipboard tool
 Plug 'roxma/vim-window-resize-easy' 
+Plug 'kassio/neoterm' "Terminal wrapper
 call plug#end()
 
 "Color Scheme
@@ -125,31 +126,12 @@ nnoremap <A-/> :noh<CR>
 inoremap jk <Esc>
 inoremap kj <Esc>
 
+"Neoterm
 "Split teminal on right side
 :set splitright
-" send paragraph under curso to terminal
-function! Exec_on_term(cmd)
-  if a:cmd=="normal"
-    exec "normal mk\"vyip"
-  else
-    exec "normal gv\"vy"
-  endif
-  if !exists("g:last_terminal_chan_id")
-    vs
-    terminal
-    let g:last_terminal_chan_id = b:terminal_job_id
-    wincmd p
-  endif
-
-  if getreg('"v') =~ "^\n"
-    call chansend(g:last_terminal_chan_id, expand("%:p")."\n")
-  else
-    call chansend(g:last_terminal_chan_id, @v)
-  endif
-  exec "normal `k"
-endfunction
-
-nnoremap <F6> :call Exec_on_term("normal")<CR>
-vnoremap <F6> :<c-u>call Exec_on_term("visual")<CR>
+let g:neoterm_default_mod='vertical'
+"Send commands to the terminal"
+nnoremap <F6> :normal vip<CR> :TREPLSendSelection<CR>
+nnoremap <leader>h :TtoggleAll<CR> 
 
 "More confing on ~/.config/nvim/plug-config
