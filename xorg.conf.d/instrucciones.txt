@@ -1,0 +1,5 @@
+Esta carpeta contiene la configuracin de los monitores para la tarjeta grafica
+NVIDIA RTX 2060 Movile.
+
+Ruta de los archivos: /usr/share/X11/xorg.conf.d/**
+OS: Arcolinux. 
